@@ -19,15 +19,11 @@ const HighscoreBoard: React.FC<HighscoreBoardProps> = ({ highscores }) => {
   return (
     <div className="highscore-board">
       <h3>🏆 High Scores 🏆</h3>
-      <div className="highscore-list">
-        {highscores.map((entry, index) => (
-          <div key={`${entry.name}-${entry.score}-${index}`} className="highscore-entry">
-            <span className="rank">#{index + 1}</span>
-            <span className="name">{entry.name}</span>
-            <span className="score">{entry.score}</span>
-          </div>
-        ))}
-      </div>
+      {highscores.map((entry, index) => (
+        <p key={`${entry.name}-${entry.score}-${index}`} className={`highscore-entry rank-${index + 1}`}>
+          #{index + 1} {entry.name} - {entry.score}
+        </p>
+      ))}
     </div>
   );
 };
