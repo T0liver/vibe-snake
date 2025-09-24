@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './SnakeGame.css';
-
-interface Position {
-  x: number;
-  y: number;
-}
-
-type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
+import { Position, Direction, HighscoreEntry } from './types';
+import { loadHighscores, addHighscore, isHighscore } from './highscoreUtils';
+import HighscoreBoard from './HighscoreBoard';
+import NameInput from './NameInput';
 
 const GRID_SIZE = 20;
 const INITIAL_SNAKE: Position[] = [{ x: 10, y: 10 }];
@@ -20,6 +17,9 @@ const SnakeGame: React.FC = () => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
+  const [highscores, setHighscores] = useState<HighscoreEntry[]>([]);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [isNewHighscore, setIsNewHighscore] = useState(false);
 
   const generateFood = useCallback((): Position => {
     const isPositionOccupied = (pos: Position) => 
@@ -65,6 +65,11 @@ const SnakeGame: React.FC = () => {
       // Check if snake hits itself
       if (newSnake.some(segment => segment.x === head.x && segment.y === head.y)) {
         setGameOver(true);
+        // Check if this is a new highscore
+        if (isHighscore(score)) {
+          setIsNewHighscore(true);
+          setShowNameInput(true);
+        }
         return currentSnake;
       }
 
@@ -80,9 +85,14 @@ const SnakeGame: React.FC = () => {
 
       return newSnake;
     });
-  }, [direction, food, gameOver, gameStarted, generateFood]);
+  }, [direction, food, gameOver, gameStarted, generateFood, score]);
 
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    if (showNameInput) {
+      // Don't handle game keys while name input is showing
+      return;
+    }
+
     if (!gameStarted) {
       if (e.code === 'Space') {
         setGameStarted(true);
@@ -91,7 +101,7 @@ const SnakeGame: React.FC = () => {
     }
 
     if (gameOver) {
-      if (e.code === 'Space') {
+      if (e.code === 'Space' && !showNameInput) {
         resetGame();
       }
       return;
@@ -120,7 +130,7 @@ const SnakeGame: React.FC = () => {
         setDirection(prev => prev !== 'LEFT' ? 'RIGHT' : prev);
         break;
     }
-  }, [gameStarted, gameOver]);
+  }, [gameStarted, gameOver, showNameInput]);
 
   const resetGame = () => {
     setSnake(INITIAL_SNAKE);
@@ -129,7 +139,23 @@ const SnakeGame: React.FC = () => {
     setGameOver(false);
     setScore(0);
     setGameStarted(false);
+    setShowNameInput(false);
+    setIsNewHighscore(false);
   };
+
+  const handleNameSubmit = (name: string) => {
+    if (isNewHighscore) {
+      addHighscore(name, score);
+      setHighscores(loadHighscores());
+    }
+    setShowNameInput(false);
+    setIsNewHighscore(false);
+  };
+
+  // Load highscores on component mount
+  useEffect(() => {
+    setHighscores(loadHighscores());
+  }, []);
 
   // Game loop
   useEffect(() => {
@@ -198,8 +224,17 @@ const SnakeGame: React.FC = () => {
       {gameOver && (
         <div className="game-message">
           <p>Game Over!</p>
-          <p>Final Score: {score}</p>
-          <p>Press SPACE to restart</p>
+          <NameInput 
+            isVisible={showNameInput} 
+            onSubmit={handleNameSubmit}
+          />
+          {!showNameInput && (
+            <>
+              <HighscoreBoard highscores={highscores} />
+              <p>Final Score: {score}</p>
+              <p>Press SPACE to restart</p>
+            </>
+          )}
         </div>
       )}
     </div>

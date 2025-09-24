@@ -1,0 +1,54 @@
+.highscore-board {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.highscore-board h3 {
+  color: #00ff00;
+  margin: 0 0 8px 0;
+  font-size: 1.1em;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.highscore-entry {
+  margin: 2px 0;
+  color: #ffffff;
+  font-size: 0.85em;
+  font-family: 'Courier New', monospace;
+}
+
+.highscore-entry.rank-1 {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.highscore-entry.rank-2 {
+  color: #c0c0c0;
+  font-weight: bold;
+}
+
+.highscore-entry.rank-3 {
+  color: #cd7f32;
+  font-weight: bold;
+}
+
+.no-scores {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin: 0;
+  font-size: 0.9em;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .highscore-board h3 {
+    font-size: 1em;
+    margin-bottom: 6px;
+  }
+  
+  .highscore-entry {
+    font-size: 0.75em;
+    margin: 1px 0;
+  }
+}
