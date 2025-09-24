@@ -24,16 +24,9 @@ To enable GitHub sync, you need to set the `REACT_APP_GITHUB_TOKEN` environment 
 
 #### Setting the Environment Variable
 
-**Option 1: Using .env file (Recommended for local development)**
+**For Local Development:**
 
-Create a `.env` file in the project root directory:
-
-```bash
-# .env
-REACT_APP_GITHUB_TOKEN=your_github_token_here
-```
-
-**Option 2: Using .env.local file (Git-ignored)**
+**Option 1: Using .env.local file (Git-ignored, recommended for local dev)**
 
 Create a `.env.local` file in the project root directory (this file is automatically ignored by Git):
 
@@ -42,7 +35,43 @@ Create a `.env.local` file in the project root directory (this file is automatic
 REACT_APP_GITHUB_TOKEN=your_github_token_here
 ```
 
-**Option 3: System environment variable**
+**Option 2: Using .env file**
+
+Create a `.env` file in the project root directory:
+
+```bash
+# .env
+REACT_APP_GITHUB_TOKEN=your_github_token_here
+```
+
+**For Cloud Deployment:**
+
+**Option 3: GitHub Repository Secrets (Recommended for cloud hosting)**
+
+1. Go to your repository on GitHub
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret**
+4. Name: `REACT_APP_GITHUB_TOKEN`
+5. Value: Your GitHub Personal Access Token
+6. Configure your deployment workflow to use this secret
+
+Example GitHub Actions workflow:
+```yaml
+# .github/workflows/deploy.yml
+env:
+  REACT_APP_GITHUB_TOKEN: ${{ secrets.REACT_APP_GITHUB_TOKEN }}
+```
+
+**Option 4: Cloud Platform Environment Variables**
+
+Configure the environment variable in your hosting platform:
+
+- **Vercel**: Project Settings → Environment Variables
+- **Netlify**: Site Settings → Build & Deploy → Environment Variables  
+- **Heroku**: Settings → Config Vars
+- **Render**: Environment → Environment Variables
+
+**Option 5: System environment variable**
 
 Set the environment variable in your shell:
 
@@ -51,7 +80,7 @@ export REACT_APP_GITHUB_TOKEN=your_github_token_here
 npm start
 ```
 
-**Option 4: Inline with npm commands**
+**Option 6: Inline with npm commands**
 
 ```bash
 REACT_APP_GITHUB_TOKEN=your_github_token_here npm start

@@ -45,11 +45,19 @@ npm install
 ```
 
 3. (Optional) Enable GitHub Highscore Sync:
+
+**For Local Development:**
 Copy `.env.example` to `.env.local` and add your GitHub token:
 ```bash
 cp .env.example .env.local
 # Edit .env.local and replace with your actual GitHub token
 ```
+
+**For Cloud Deployment:**
+Set up repository secrets or environment variables in your hosting platform:
+- **GitHub Pages**: Use repository secrets (see `.github/workflows/deploy.yml`)
+- **Vercel/Netlify/Heroku**: Configure environment variables in platform settings
+- See [GITHUB_INTEGRATION.md](./GITHUB_INTEGRATION.md) for detailed cloud deployment instructions
 
 ### Running the Game
 
