@@ -5,7 +5,7 @@ A classic Snake game built with React and TypeScript featuring a retro aesthetic
 
 ## Features
 
-- 🎮 100x100 grid playground with smooth movement
+- 🎮 20x20 grid playground with smooth movement
 - 🐍 Green snake with glowing effects
 - 🍎 Animated red food with pulsing animation
 - 🎯 Score tracking system
