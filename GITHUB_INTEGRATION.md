@@ -22,10 +22,42 @@ To enable GitHub sync, you need to set the `REACT_APP_GITHUB_TOKEN` environment 
 - **Content**: Read and write
 - **Metadata**: Read-only
 
-Example:
+#### Setting the Environment Variable
+
+**Option 1: Using .env file (Recommended for local development)**
+
+Create a `.env` file in the project root directory:
+
 ```bash
+# .env
 REACT_APP_GITHUB_TOKEN=your_github_token_here
 ```
+
+**Option 2: Using .env.local file (Git-ignored)**
+
+Create a `.env.local` file in the project root directory (this file is automatically ignored by Git):
+
+```bash
+# .env.local
+REACT_APP_GITHUB_TOKEN=your_github_token_here
+```
+
+**Option 3: System environment variable**
+
+Set the environment variable in your shell:
+
+```bash
+export REACT_APP_GITHUB_TOKEN=your_github_token_here
+npm start
+```
+
+**Option 4: Inline with npm commands**
+
+```bash
+REACT_APP_GITHUB_TOKEN=your_github_token_here npm start
+```
+
+> **Note**: The token must be prefixed with `REACT_APP_` to be accessible in the React application. Without this prefix, Create React App will not include it in the build.
 
 ### Repository Configuration
 
