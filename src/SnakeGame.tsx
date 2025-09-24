@@ -8,10 +8,10 @@ interface Position {
 
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 
-const GRID_SIZE = 100;
-const INITIAL_SNAKE: Position[] = [{ x: 50, y: 50 }];
+const GRID_SIZE = 20;
+const INITIAL_SNAKE: Position[] = [{ x: 10, y: 10 }];
 const INITIAL_DIRECTION: Direction = 'RIGHT';
-const INITIAL_FOOD: Position = { x: 25, y: 25 };
+const INITIAL_FOOD: Position = { x: 5, y: 5 };
 
 const SnakeGame: React.FC = () => {
   const [snake, setSnake] = useState<Position[]>(INITIAL_SNAKE);
