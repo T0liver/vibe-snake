@@ -1,4 +1,4 @@
-import { addHighscore, loadHighscores, isHighscore } from '../highscoreUtils';
+import { addHighscoreSync as addHighscore, loadHighscores, isHighscore } from '../highscoreUtils';
 
 // Mock localStorage
 const localStorageMock = (() => {

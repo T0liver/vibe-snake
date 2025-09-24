@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './SnakeGame.css';
 import { Position, Direction, HighscoreEntry } from './types';
-import { loadHighscores, addHighscore, isHighscore } from './highscoreUtils';
+import { loadHighscores, addHighscore, isHighscore, loadHighscoresWithSync } from './highscoreUtils';
 import HighscoreBoard from './HighscoreBoard';
 import NameInput from './NameInput';
 
@@ -143,10 +143,12 @@ const SnakeGame: React.FC = () => {
     setIsNewHighscore(false);
   };
 
-  const handleNameSubmit = (name: string) => {
+  const handleNameSubmit = async (name: string) => {
     if (isNewHighscore) {
-      addHighscore(name, score);
-      setHighscores(loadHighscores());
+      await addHighscore(name, score);
+      // Reload highscores to get the latest from GitHub
+      const updatedHighscores = await loadHighscoresWithSync();
+      setHighscores(updatedHighscores);
     }
     setShowNameInput(false);
     setIsNewHighscore(false);
@@ -154,7 +156,18 @@ const SnakeGame: React.FC = () => {
 
   // Load highscores on component mount
   useEffect(() => {
-    setHighscores(loadHighscores());
+    const loadInitialHighscores = async () => {
+      try {
+        const highscores = await loadHighscoresWithSync();
+        setHighscores(highscores);
+      } catch (error) {
+        console.error('Failed to load highscores with sync:', error);
+        // Fallback to local storage only
+        setHighscores(loadHighscores());
+      }
+    };
+    
+    loadInitialHighscores();
   }, []);
 
   // Game loop
