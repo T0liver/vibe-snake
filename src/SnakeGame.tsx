@@ -20,6 +20,10 @@ const SnakeGame: React.FC = () => {
   const [highscores, setHighscores] = useState<HighscoreEntry[]>([]);
   const [showNameInput, setShowNameInput] = useState(false);
   const [isNewHighscore, setIsNewHighscore] = useState(false);
+  
+  // Touch/swipe handling state
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number } | null>(null);
 
   const generateFood = useCallback((): Position => {
     const isPositionOccupied = (pos: Position) => 
@@ -132,6 +136,85 @@ const SnakeGame: React.FC = () => {
     }
   }, [gameStarted, gameOver, showNameInput]);
 
+  // Touch/swipe handlers
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  }, []);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd || showNameInput) return;
+    
+    if (!gameStarted && !gameOver) {
+      // In start screen, any swipe starts the game
+      setGameStarted(true);
+      return;
+    }
+
+    if (gameOver && !showNameInput) {
+      // In game over screen, any swipe restarts
+      resetGame();
+      return;
+    }
+
+    if (!gameStarted || gameOver) return;
+
+    const distanceX = touchStart.x - touchEnd.x;
+    const distanceY = touchStart.y - touchEnd.y;
+    const isLeftSwipe = distanceX > 50;
+    const isRightSwipe = distanceX < -50;
+    const isUpSwipe = distanceY > 50;
+    const isDownSwipe = distanceY < -50;
+
+    // Prioritize the direction with the largest movement
+    if (Math.abs(distanceX) > Math.abs(distanceY)) {
+      if (isLeftSwipe) {
+        setDirection(prev => prev !== 'RIGHT' ? 'LEFT' : prev);
+      } else if (isRightSwipe) {
+        setDirection(prev => prev !== 'LEFT' ? 'RIGHT' : prev);
+      }
+    } else {
+      if (isUpSwipe) {
+        setDirection(prev => prev !== 'DOWN' ? 'UP' : prev);
+      } else if (isDownSwipe) {
+        setDirection(prev => prev !== 'UP' ? 'DOWN' : prev);
+      }
+    }
+  }, [touchStart, touchEnd, gameStarted, gameOver, showNameInput]);
+
+  // Mobile button handlers
+  const handleMobileStart = useCallback(() => {
+    if (!gameStarted && !gameOver) {
+      setGameStarted(true);
+    } else if (gameOver && !showNameInput) {
+      resetGame();
+    }
+  }, [gameStarted, gameOver, showNameInput]);
+
+  const handleDirectionButton = useCallback((newDirection: Direction) => {
+    if (!gameStarted || gameOver || showNameInput) return;
+    
+    setDirection(prev => {
+      switch (newDirection) {
+        case 'UP': return prev !== 'DOWN' ? 'UP' : prev;
+        case 'DOWN': return prev !== 'UP' ? 'DOWN' : prev;
+        case 'LEFT': return prev !== 'RIGHT' ? 'LEFT' : prev;
+        case 'RIGHT': return prev !== 'LEFT' ? 'RIGHT' : prev;
+        default: return prev;
+      }
+    });
+  }, [gameStarted, gameOver, showNameInput]);
+
   const resetGame = () => {
     setSnake(INITIAL_SNAKE);
     setDirection(INITIAL_DIRECTION);
@@ -182,6 +265,19 @@ const SnakeGame: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress]);
 
+  // Touch event listeners
+  useEffect(() => {
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
+    
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
+
   const renderGrid = () => {
     const grid = [];
     for (let row = 0; row < GRID_SIZE; row++) {
@@ -231,6 +327,14 @@ const SnakeGame: React.FC = () => {
         <div className="game-message">
           <p>Press SPACE to start!</p>
           <p>Use Arrow Keys or WASD to control the snake</p>
+          <div className="mobile-controls">
+            <button className="mobile-start-button" onClick={handleMobileStart}>
+              TAP TO START
+            </button>
+            <p style={{ margin: '5px 0', fontSize: '0.9em', color: '#cccccc' }}>
+              Swipe to move • Tap anywhere to start
+            </p>
+          </div>
         </div>
       )}
 
@@ -246,8 +350,50 @@ const SnakeGame: React.FC = () => {
               <HighscoreBoard highscores={highscores} />
               <p>Final Score: {score}</p>
               <p>Press SPACE to restart</p>
+              <div className="mobile-controls">
+                <button className="mobile-start-button" onClick={handleMobileStart}>
+                  TAP TO RESTART
+                </button>
+                <p style={{ margin: '5px 0', fontSize: '0.9em', color: '#cccccc' }}>
+                  Swipe anywhere to restart
+                </p>
+              </div>
             </>
           )}
+        </div>
+      )}
+      
+      {/* Mobile directional controls - only show during gameplay */}
+      {gameStarted && !gameOver && (
+        <div className="swipe-controls">
+          <button 
+            className="control-button control-up"
+            onTouchStart={(e) => { e.preventDefault(); handleDirectionButton('UP'); }}
+            onClick={() => handleDirectionButton('UP')}
+          >
+            ↑
+          </button>
+          <button 
+            className="control-button control-left"
+            onTouchStart={(e) => { e.preventDefault(); handleDirectionButton('LEFT'); }}
+            onClick={() => handleDirectionButton('LEFT')}
+          >
+            ←
+          </button>
+          <button 
+            className="control-button control-right"
+            onTouchStart={(e) => { e.preventDefault(); handleDirectionButton('RIGHT'); }}
+            onClick={() => handleDirectionButton('RIGHT')}
+          >
+            →
+          </button>
+          <button 
+            className="control-button control-down"
+            onTouchStart={(e) => { e.preventDefault(); handleDirectionButton('DOWN'); }}
+            onClick={() => handleDirectionButton('DOWN')}
+          >
+            ↓
+          </button>
         </div>
       )}
     </div>
