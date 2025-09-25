@@ -2,6 +2,7 @@
   "name": "vibe-snake",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://t0liver.github.io/vibe-snake",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",

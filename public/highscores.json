@@ -1,5 +1,10 @@
 [
   {
+    "name": "ThirdRun",
+    "score": 290,
+    "date": "2025-09-25T07:39:01.837Z"
+  },
+  {
     "name": "Player1",
     "score": 150,
     "date": "2024-01-15T10:30:00.000Z"
@@ -13,5 +18,15 @@
     "name": "Anonymous",
     "score": 80,
     "date": "2024-01-13T20:15:00.000Z"
+  },
+  {
+    "name": "SecondRund",
+    "score": 80,
+    "date": "2025-09-25T07:35:14.847Z"
+  },
+  {
+    "name": "FirstRun",
+    "score": 30,
+    "date": "2025-09-24T22:58:26.014Z"
   }
 ]
